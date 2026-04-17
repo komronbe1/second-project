@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .resource import CardRecource
+from .resource import CardResource
 from .models import Card
 from .forms import ExcelImport
 from django.shortcuts import render, redirect
@@ -8,7 +8,7 @@ from django.urls import path
 
 @admin.register(Card)
 class CardAdmin(ImportExportModelAdmin):
-    resource_classes = (CardRecource, )
+    resource_classes = (CardResource, )
     list_display = ['card_number', 'phone', 'balance','status','expire']
     list_filter = ['status', 'card_number', 'phone']
 
