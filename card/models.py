@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from datetime import date
-from card.utility import is_luhn_valid, validate_phone, format_expire
+from card.utility import is_luhn_valid, validate_phone, parse_expire
 
 # Holatlar uchun konstantalar
 ACTIVE = 'active'
@@ -48,16 +48,13 @@ class Card(models.Model):
             except ValidationError:
                 errors['phone'] = "Telefon raqami formati noto'g'ri (Masalan: 998901234567)"
 
-        # if self.expire:
-        #     expiry_date_obj = format_expire(self.expire)
-        #     if expiry_date_obj:
-        #         self.expire = expiry_date_obj.strftime("%m/%y")
-                
-        #         today = date.today().replace(day=1)
-        #         if expiry_date_obj < today:
-        #             self.status = EXPIRE
-        #     else:
-        #         errors['expire'] = "Muddati noto'g'ri formatda! (Masalan: 12/25)"
+        if self.expire:
+            try:
+                expiry_date_obj = parse_expire(self.expire) # format_expire emas, parse_expire
+                self.expire = expiry_date_obj.strftime("%m/%y")
+                # ...
+            except (ValueError, ValidationError):
+                errors['expire'] = "Muddati noto'g'ri formatda!" 
 
         if errors:
             raise ValidationError(errors)
