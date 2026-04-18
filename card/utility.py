@@ -1,7 +1,7 @@
 
 import re
 from django.core.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, date
 
 
 def is_luhn_valid(card_number):
@@ -39,33 +39,69 @@ def validate_phone(value):
     return clean_phone
 
 
+def is_expired(expire_date):
+    if not expire_date:
+        return False
+    today = date.today().replace(day=1)
+    return expire_date < today
 
-def format_expire(raw_expire):
-    """
-    Turli formatdagi expire matnlarini yagona sana (date) obyektiga o'tkazadi.
-    Masalan: '12/24', '2024-12', '12.2024' -> 2024-12-01
-    """
-    if not raw_expire:
-        return None
 
-    raw_expire = str(raw_expire).strip()
-    
-    # Tekshiriladigan formatlar ro'yxati
-    formats = [
-        "%m/%y",   # 12/24
-        "%Y-%m",   # 2024-12
-        "%m.%Y",   # 12.2024
-        "%m/%Y",   # 12/2024
-        "%d.%m.%Y" # 15.12.2024 (agar kun bilan kelsa)
-    ]
 
-    for fmt in formats:
-        try:
-            dt = datetime.strptime(raw_expire, fmt)
-            # Bizga faqat oy va yil muhim, shuning uchun kunni 1-sana qilib belgilaymiz
-            return dt.date().replace(day=1)
-        except ValueError:
-            continue
+def normalize_card(value):
+    return re.sub(r'\D', '', value or '')
 
-    return None  # Agar hech bir formatga tushmasa
 
+from datetime import datetime
+
+# MM/YY yoki MM/YYYY
+PATTERN_MM_YY = re.compile(r"^(0[1-9]|1[0-2])[/\.](\d{2}|\d{4})$")
+
+# YYYY-MM
+PATTERN_YYYY_MM = re.compile(r"^(\d{4})-(0[1-9]|1[0-2])$")
+def parse_expire(value):
+    if not value:
+        raise ValueError("Expire bo‘sh")
+
+    raw = str(value).strip()
+
+    # 🔹 1. MM/YY yoki MM/YYYY (04/25, 11.2026)
+    match = PATTERN_MM_YY.match(raw)
+    if match:
+        month = int(match.group(1))
+        year = int(match.group(2))
+
+        if year < 100:
+            year += 2000
+
+        return datetime(year, month, 1)
+
+    # 🔹 2. YYYY-MM (2025-07)
+    match = PATTERN_YYYY_MM.match(raw)
+    if match:
+        year = int(match.group(1))
+        month = int(match.group(2))
+
+        return datetime(year, month, 1)
+
+    raise ValueError(f"Noto‘g‘ri format: {value}")
+
+
+
+def card_mask(card_number):
+    card_number = str(card_number)
+    card = f"{card_number[:4]} **** **** {card_number[-4:]}"
+    return card
+
+
+def phone_mask(phone: str) -> str:
+    phone = str(phone).replace("+", "").replace(" ", "")
+
+    # +998901234567 (12 ta raqam)
+    if len(phone) == 12 and phone.startswith("998"):
+        return f"+{phone[:3]} {phone[3]}** *** ** {phone[-2:]}"
+
+    # 901234567 (9 ta raqam)
+    if len(phone) == 9:
+        return f"+998 {phone[0]}** *** ** {phone[-2:]}"
+
+    raise ValueError("Invalid phone number format")
