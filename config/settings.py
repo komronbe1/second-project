@@ -127,3 +127,5 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+GEMINI_API_KEY = 'AIzaSyDhde3n8eiZwDa58eLUksJc_9iVj31QDpU'
