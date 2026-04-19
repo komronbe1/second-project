@@ -114,4 +114,4 @@ def phone_mask(phone: str) -> str:
     if len(phone) == 9:
         return f"+998 {phone[0]}** *** ** {phone[-2:]}"
 
-    raise ValueError("Invalid phone number format")
+    return phone

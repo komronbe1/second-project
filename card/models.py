@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from datetime import date
 from card.utility import is_luhn_valid, validate_phone, parse_expire
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Holatlar uchun konstantalar
 ACTIVE = 'active'
@@ -30,14 +31,18 @@ class Card(models.Model):
     balance = models.DecimalField(
         max_digits=16,
         decimal_places=2,
-        default=0
+        default=0,
+        validators=[
+            MinValueValidator(0,message="balans 0dan kichik bo'lishi mumkin emas"),
+            MaxValueValidator(1200000000, message="karta eng ko'pi bn 1.2mlrd qabul qiladi")
+        ]
     )
 
     def clean(self):
         """Barcha maydonlarni validatsiya qilish"""
         errors = {}
 
-        #  Karta raqamini Luhn algoritmi bo'yicha tekshirish
+        
         if self.card_number:
             if not is_luhn_valid(self.card_number):
                 errors['card_number'] = f"Karta raqami xato: {self.card_number}"
@@ -50,9 +55,9 @@ class Card(models.Model):
 
         if self.expire:
             try:
-                expiry_date_obj = parse_expire(self.expire) # format_expire emas, parse_expire
+                expiry_date_obj = parse_expire(self.expire) 
                 self.expire = expiry_date_obj.strftime("%m/%y")
-                # ...
+                
             except (ValueError, ValidationError):
                 errors['expire'] = "Muddati noto'g'ri formatda!" 
 
