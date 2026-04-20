@@ -112,12 +112,12 @@ class CardAdmin(ImportExportModelAdmin):
                 # Telegram уведомление
                 send_admin_notification(
                     created_count + updated_count,
-                    method=f"✨ AI Import (новых: {created_count}, обновлено: {updated_count}, ошибок: {error_count})"
+                    method=f"✨ AI Import (yengi: {created_count}, obnovleniye: {updated_count}, hatolar: {error_count})"
                 )
 
                 self.message_user(
                     request,
-                    f"✨ AI импорт завершён! Создано: {created_count}, обновлено: {updated_count}, ошибок: {error_count}"
+                    f"✨ AI import bo'ldi! create: {created_count}, update: {updated_count}, mistake: {error_count}"
                 )
 
             except Exception as e:
@@ -167,7 +167,7 @@ class CardAdmin(ImportExportModelAdmin):
                 if errors:
                     messages.error(request, f"Ошибки в строках: {'; '.join(errors)}")
 
-                messages.success(request, f"✅ Успешно импортировано: {created_count}")
+                messages.success(request, f"✅ Успешно import: {created_count}")
                 return redirect("..")
         else:
             form = ExcelImport()

@@ -57,5 +57,5 @@ class CardResource(resources.ModelResource):
         if total > 0:
             send_admin_notification(
                 total,
-                method=f"📁 Стандартный импорт (новых: {created}, обновлено: {updated})"
+                method=f"📁 standard import (yengi: {created}, update: {updated})"
             )

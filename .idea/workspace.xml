@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9269f2dd-9db0-4aac-b875-790b8c1f20e2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/card/management/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/card/management/commands/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/card/management/commands/send_messages.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/card/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/card/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/card/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/card/ai_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/card/ai_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/card/management/commands/export_cards.py" beforeDir="false" afterPath="$PROJECT_DIR$/card/management/commands/export_cards.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/card/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/card/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/card/resource.py" beforeDir="false" afterPath="$PROJECT_DIR$/card/resource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,15 +47,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;abduvoris-1.4-1.5&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "abduvoris-1.4-1.5"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\HP\Desktop\second-project\templates\admin\card\card" />
