@@ -1,54 +1,61 @@
 import re
-from import_export import resources, fields
+from decimal import Decimal, ROUND_DOWN, InvalidOperation
+from import_export import resources
 from .models import Card
+from .utils import send_admin_notification
+
 
 class CardResource(resources.ModelResource):
-    card_number = fields.Field(attribute='card_number', column_name='card_number')
-
     class Meta:
         model = Card
         import_id_fields = ('card_number',)
         fields = ('card_number', 'expire', 'phone', 'status', 'balance')
 
-    def before_import(self, dataset, **kwargs):
-        """
-        ЖЕСТКИЙ ХАК: Принудительно перезаписываем заголовки.
-        Главное, чтобы в твоем Excel колонки шли именно в таком порядке:
-        1: Карта, 2: Срок, 3: Телефон, 4: Статус, 5: Баланс
-        """
-        dataset.headers = ['card_number', 'expire', 'phone', 'status', 'balance']
+    def before_import_row(self, row, row_number=None, **kwargs):
 
-    # ИСПРАВЛЕННАЯ СИГНАТУРА: добавили 'row' и убрали 'using_transactions'
+        # 1. ЧИСТИМ НОМЕР КАРТЫ
+        if row.get('card_number'):
+            row['card_number'] = "".join(re.findall(r'\d+', str(row['card_number'])))
+
+        # 2. ЧИСТИМ ТЕЛЕФОН
+        raw_phone = str(row.get('phone', '') or '').strip().lower()
+        if not raw_phone or raw_phone == 'none':
+            row['phone'] = ""
+        else:
+            clean = "".join(re.findall(r'\d+', raw_phone))
+            if len(clean) == 9:
+                clean = '998' + clean
+            row['phone'] = clean if len(clean) == 12 else ""
+
+        # 3. ЧИСТИМ БАЛАНС
+        raw_balance = row.get('balance', 0) or 0
+        try:
+            clean = Decimal(str(raw_balance).replace(',', '').replace(' ', ''))
+            row['balance'] = str(clean.quantize(Decimal('0.01'), rounding=ROUND_DOWN))
+        except (InvalidOperation, ValueError, TypeError):
+            row['balance'] = '0.00'
+
+        # 4. ЧИСТИМ СТАТУС
+        raw_status = str(row.get('status', '') or '').lower().strip()
+        row['status'] = raw_status if raw_status in ['active', 'inactive', 'expired'] else 'inactive'
+
     def before_save_instance(self, instance, row, **kwargs):
-        """
-        Чистим данные перед сохранением
-        """
-        # 1. Чистим номер карты
         if instance.card_number:
             instance.card_number = "".join(re.findall(r'\d+', str(instance.card_number)))
+        try:
+            instance.balance = Decimal(str(instance.balance)).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+        except (InvalidOperation, ValueError, TypeError):
+            instance.balance = Decimal('0.00')
 
-        # 2. Чистим телефон
-        if instance.phone:
-            phone = "".join(re.findall(r'\d+', str(instance.phone)))
-            if len(phone) == 9:
-                phone = '998' + phone
-            instance.phone = phone
-
-        # 3. НОВОЕ: Спасаем баланс от краша (decimal.ConversionSyntax)
-        if instance.balance:
-            try:
-                # Меняем запятую на точку (в Excel часто пишут 500,50 вместо 500.50)
-                raw_balance = str(instance.balance).replace(',', '.')
-                # Убираем все символы, кроме цифр и точки
-                clean_balance = "".join(re.findall(r'[\d\.]', raw_balance))
-
-                if clean_balance:
-                    instance.balance = float(clean_balance)
-                else:
-                    instance.balance = 0.00 # Если там были только буквы
-            except Exception:
-                instance.balance = 0.00
-        else:
-            instance.balance = 0.00 # Если ячейка пустая
-
-        return instance
+    def after_import(self, dataset, result, **kwargs):
+        # dry_run=True значит это просто превью — не отправляем
+        if kwargs.get('dry_run', True):
+            return
+        created = result.totals.get('new', 0)
+        updated = result.totals.get('update', 0)
+        total = created + updated
+        if total > 0:
+            send_admin_notification(
+                total,
+                method=f"📁 Стандартный импорт (новых: {created}, обновлено: {updated})"
+            )

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # "unfold",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,4 +129,4 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-GEMINI_API_KEY = 'AIzaSyDhde3n8eiZwDa58eLUksJc_9iVj31QDpU'
+GEMINI_API_KEY = 'AIzaSyAWzI0Evm0CQoS_3vkMqXWmaE33vmwA04Y'

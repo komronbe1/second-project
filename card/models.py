@@ -23,12 +23,12 @@ class Card(models.Model):
         (INACTIVE, 'inactive')
     )
 
-    card_number = models.CharField(max_length=20, unique=True)
+    card_number = models.CharField(max_length=16, unique=True)
     expire = models.CharField(max_length=20, help_text="Format: MM/YY, YYYY-MM yoki MM.YYYY")
     phone = models.CharField(max_length=20, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=ACTIVE)
     balance = models.DecimalField(
-        max_digits=16,
+        max_digits=14,
         decimal_places=2,
         default=0
     )
@@ -38,9 +38,9 @@ class Card(models.Model):
         errors = {}
 
         #  Karta raqamini Luhn algoritmi bo'yicha tekshirish
-        if self.card_number:
-            if not is_luhn_valid(self.card_number):
-                errors['card_number'] = f"Karta raqami xato: {self.card_number}"
+        # if self.card_number:
+        #     if not is_luhn_valid(self.card_number):
+        #         errors['card_number'] = f"Karta raqami xato: {self.card_number}"
 
         if self.phone:
             try:
