@@ -80,38 +80,4 @@ def validate_phone(value):
     return clean_phone
 
 
-# =========================
-# EXPIRE CHECK
-# =========================
 
-def is_expired(expire_date):
-    if not expire_date:
-        return False
-
-    today = date.today().replace(day=1)
-    return expire_date < today
-
-
-# =========================
-# MASK CARD
-# =========================
-
-def card_mask(card_number):
-    card_number = str(card_number)
-    return f"{card_number[:4]} **** **** {card_number[-4:]}"
-
-
-# =========================
-# MASK PHONE
-# =========================
-
-def phone_mask(phone: str) -> str:
-    phone = str(phone).replace("+", "").replace(" ", "")
-
-    if len(phone) == 12 and phone.startswith("998"):
-        return f"+{phone[:3]} {phone[3]}** *** ** {phone[-2:]}"
-
-    if len(phone) == 9:
-        return f"+998 {phone[0]}** *** ** {phone[-2:]}"
-
-    return phone
