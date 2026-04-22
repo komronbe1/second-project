@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my apps
-    'card',
+    'card.apps.CardConfig',
     # other packages
     'rest_framework',
     'import_export',
